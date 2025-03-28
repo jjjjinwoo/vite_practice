@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-function Map2() {
+function Map3() {
   const mapRef = useRef(null);
   const [map, setMap] = useState(null);
-  const [marker, setMarker] = useState(null);
-  const [address, setAddress] = useState(''); // 주소를 React state로 관리
+  const [marker, setMarker] = useState(null); // 마커 상태
+  const address = '서울특별시 종로구 세종대로 175 (세종로, 정부서울청사)'; // 초기 주소
 
   useEffect(() => {
     const naver = window.naver; // 네이버 지도 API 객체
@@ -27,15 +27,15 @@ function Map2() {
       });
 
       setMarker(initialMarker); // 마커 상태 설정
+
+      // 주소를 기준으로 마커 추가
+      handleAddressSearch(address, map); // 주소로 검색하여 초기 마커 설정
     }
   }, []); // 처음 한 번만 실행
 
-  const handleAddressSearch = () => {
-    const addressInput = document.getElementById('address');
-    const address = addressInput.value;
-
-    // 주소 검색 
+  const handleAddressSearch = (address, map) => {
     const naver = window.naver;
+
     if (naver && address) {
       naver.maps.Service.geocode({
         query: address,
@@ -49,26 +49,21 @@ function Map2() {
         const result = response.v2;
         const items = result.addresses;
 
-        // React state로 주소를 업데이트
-        setAddress(items[0].roadAddress);
-
         // 주소로 검색된 첫 번째 결과
         const newLocation = new naver.maps.LatLng(items[0].y, items[0].x);
 
         // 지도 중심을 새 위치로 이동
         map.setCenter(newLocation);
-        map.setZoom(20); // 확대 레벨 조정
+        map.setZoom(18); // 확대 레벨 조정
 
         // 기존 마커가 있으면 위치 업데이트, 없으면 새 마커 추가
         if (marker) {
-          marker.setPosition(newLocation);
+          marker.setPosition(newLocation); // 기존 마커 위치 업데이트
         } else {
+          // 새로운 마커를 추가 (커스텀 마커)
           const newMarker = new naver.maps.Marker({
             position: newLocation,
-            map: map,
-            icon: {
-              content: `<div style="border: 2px solid blue; border-radius: 50%; width: 20px; height: 20px; background-color:red;"></div>`,
-            },
+            map: map
           });
 
           setMarker(newMarker); // 새 마커 상태 업데이트
@@ -79,19 +74,13 @@ function Map2() {
 
   return (
     <>
-      <h1>지도 검색 페이지</h1>
+      <h1>지도 페이지</h1>
 
       <div className="search">
         <input 
-          id="address" 
           type="text" 
-          placeholder="검색할 주소를 입력하세요" 
-        />
-        <input 
-          id="submit" 
-          type="button" 
-          value="주소 검색" 
-          onClick={handleAddressSearch} 
+          value={address} // 초기 주소값 표시
+          readOnly // 수정 불가
         />
       </div>
 
@@ -101,9 +90,9 @@ function Map2() {
         ref={mapRef}
       ></div>
 
-      <h2>검색결과 : {address ? address : '?'}</h2>
+      <h2>현재 위치: {address}</h2>
     </>
   );
 }
 
-export default Map2;
+export default Map3;

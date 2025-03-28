@@ -1,9 +1,9 @@
 import { faker } from '@faker-js/faker'
 
 export type Person = {
-  firstName: string
-  lastName: string
-  age: number
+  No: number
+  상호명: string
+  고객결제금액: string
   visits: number
   progress: number
   status: 'relationship' | 'complicated' | 'single'
@@ -20,9 +20,9 @@ const range = (len: number) => {
 
 const newPerson = (): Person => {
   return {
-    firstName: faker.person.firstName(),
-    lastName: faker.person.lastName(),
-    age: faker.number.int(40),
+    No: faker.number.int(40),
+    상호명: faker.person.firstName(),
+    고객결제금액: faker.number.int(4000) + '00원',
     visits: faker.number.int(1000),
     progress: faker.number.int(100),
     status: faker.helpers.shuffle<Person['status']>([
